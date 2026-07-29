@@ -1,7 +1,7 @@
 package com.example.capstone.controller;
 
-import com.example.capstone.entity.cityEntity;
-import com.example.capstone.repository.cityEntityRepository;
+import com.example.capstone.entity.CityEntity;
+import com.example.capstone.repository.CityEntityRepository;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -14,26 +14,26 @@ import java.util.UUID;
 
 @RestController
 @RequestMapping("/api/entities")
-public class cityEntityController {
+public class CityEntityController {
 
-    private final cityEntityRepository repository;
+    private final CityEntityRepository repository;
 
-    public cityEntityController(cityEntityRepository repository) {
+    public CityEntityController(CityEntityRepository repository) {
         this.repository = repository;
     }
 
     @GetMapping
-    public List<cityEntity> getAll() {
+    public List<CityEntity> getAll() {
         return repository.findAll();
     }
 
     @PostMapping
-    public cityEntity create(@RequestBody cityEntity entity) {
+    public CityEntity create(@RequestBody CityEntity entity) {
         return repository.save(entity);
     }
 
     @GetMapping("/{id}")
-    public cityEntity getOne(@PathVariable UUID id) {
+    public CityEntity getOne(@PathVariable UUID id) {
         return repository.findById(id).orElseThrow();
     }
 }
