@@ -100,7 +100,7 @@ city-twin/
 |---|---|---|
 | Backend Architect | Abdul | Java, REST APIs, this service |
 | Simulation Engineer | — | Python, ML forecasting/simulation |
-| Data & Cloud Ops | Nyba | PostgreSQL, Docker, cloud deployment |
+| Data & Cloud Ops | Nana Yaw | PostgreSQL, Docker, cloud deployment |
 | UI/UX Developer | — | React/Vue, Chart.js |
 | Visualization Engineer | — | WebGL, map/visual rendering |
 
