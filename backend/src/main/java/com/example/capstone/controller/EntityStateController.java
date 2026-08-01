@@ -2,6 +2,7 @@ package com.example.capstone.controller;
 
 import com.example.capstone.entity.EntityState;
 import com.example.capstone.repository.EntityStateRepository;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.web.bind.annotation.*;
 import java.util.List;
 import java.util.UUID;
@@ -11,9 +12,11 @@ import java.util.UUID;
 public class EntityStateController {
 
     private final EntityStateRepository repository;
+    private final SimpMessagingTemplate messagingTemplate;
 
-    public EntityStateController(EntityStateRepository repository) {
+    public EntityStateController(EntityStateRepository repository, SimpMessagingTemplate messagingTemplate) {
         this.repository = repository;
+        this.messagingTemplate = messagingTemplate;
     }
 
     @GetMapping
@@ -23,7 +26,9 @@ public class EntityStateController {
 
     @PostMapping
     public EntityState create(@RequestBody EntityState state) {
-        return repository.save(state);
+        EntityState saved = repository.save(state);
+        messagingTemplate.convertAndSend("/topic/entity-states", saved);
+        return saved;
     }
 
     @GetMapping("/entity/{entityId}")
