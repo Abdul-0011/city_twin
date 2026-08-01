@@ -1,5 +1,6 @@
 package com.example.capstone.entity;
 
+import jakarta.validation.constraints.NotNull;
 import jakarta.persistence.*;
 import java.time.Instant;
 import java.util.UUID;
@@ -12,15 +13,19 @@ public class EntityState {
     @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
 
+    @NotNull
     @ManyToOne
     @JoinColumn(name = "entity_id", nullable = false)
     private CityEntity entity;
 
+    @NotNull
     private Instant timestamp;
 
+    @NotNull
     @Enumerated(EnumType.STRING)
     private MetricType metricType;
 
+    @NotNull
     private Double value;
 
     public UUID getId() { return id; }

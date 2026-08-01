@@ -1,5 +1,6 @@
 package com.example.capstone.controller;
 
+import jakarta.validation.Valid;
 import com.example.capstone.entity.SimulationRun;
 import com.example.capstone.repository.SimulationRunRepository;
 import org.springframework.web.bind.annotation.*;
@@ -22,7 +23,7 @@ public class SimulationRunController {
     }
 
     @PostMapping
-    public SimulationRun create(@RequestBody SimulationRun run) {
+    public SimulationRun create(@Valid @RequestBody SimulationRun run) {
         return repository.save(run);
     }
 

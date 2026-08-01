@@ -1,5 +1,6 @@
 package com.example.capstone.controller;
 
+import jakarta.validation.Valid;
 import com.example.capstone.dto.AlertResponse;
 import com.example.capstone.entity.Alert;
 import com.example.capstone.repository.AlertRepository;
@@ -38,7 +39,7 @@ public class AlertController {
     }
 
     @PostMapping
-    public AlertResponse create(@RequestBody Alert alert) {
+    public AlertResponse create(@Valid @RequestBody Alert alert) {
         Alert saved = repository.save(alert);
         return toResponse(saved);
     }
