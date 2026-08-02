@@ -5,5 +5,6 @@ public enum MetricType {
     AVG_SPEED,
     ENERGY_KWH,
     OCCUPANCY,
-    AIR_QUALITY_INDEX
+    AIR_QUALITY_INDEX,
+    POPULATION
 }
