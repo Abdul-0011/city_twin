@@ -1,5 +1,8 @@
 package com.example.capstone.controller;
 
+import com.example.capstone.entity.EntityType;
+import org.springframework.web.bind.annotation.RequestParam;
+import jakarta.validation.Valid;
 import com.example.capstone.entity.CityEntity;
 import com.example.capstone.repository.CityEntityRepository;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -23,12 +26,12 @@ public class CityEntityController {
     }
 
     @GetMapping
-    public List<CityEntity> getAll() {
-        return repository.findAll();
+    public List<CityEntity> getAll(@RequestParam(required = false) EntityType type) {
+        return type == null ? repository.findAll() : repository.findByType(type);
     }
 
     @PostMapping
-    public CityEntity create(@RequestBody CityEntity entity) {
+    public CityEntity create(@Valid @RequestBody CityEntity entity) {
         return repository.save(entity);
     }
 

@@ -5,5 +5,6 @@ public enum EntityType {
     INTERSECTION,
     SENSOR,
     BUILDING,
-    TRANSIT_STOP
+    TRANSIT_STOP,
+    ZONE
 }

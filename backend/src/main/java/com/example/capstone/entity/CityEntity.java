@@ -1,5 +1,6 @@
 package com.example.capstone.entity;
-
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -17,11 +18,17 @@ public class CityEntity {
     @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
 
+    @NotNull
     @Enumerated(EnumType.STRING)
     private EntityType type;
 
+    @NotBlank
     private String name;
+
+    @NotNull
     private Double latitude;
+
+    @NotNull
     private Double longitude;
 
     public UUID getId() {
