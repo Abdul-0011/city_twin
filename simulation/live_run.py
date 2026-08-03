@@ -1,6 +1,6 @@
 import time
-from simulation.coupled_model import CoupledCityModel
-from simulation.backend_client import BackendClient
+from coupled_model import CoupledCityModel
+from backend_client import BackendClient
 
 client = BackendClient()
 zone_ids = client.ensure_zones(['Downtown', 'Northside', 'Eastside', 'Southside', 'Westside'])

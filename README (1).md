@@ -1,3 +1,4 @@
+# Before you go live, git.ignore the pycashe files in the repo if the auto alerts function has not been added to the backend.
 # Urban Simulator — Abstracted City Digital Twin
 
 A simulated city digital twin: entities (roads, intersections, sensors, buildings, transit stops) with live time-series state, what-if simulation runs, and threshold/anomaly alerts — pushed to clients in real time over WebSocket.

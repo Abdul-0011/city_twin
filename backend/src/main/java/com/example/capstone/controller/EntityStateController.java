@@ -1,6 +1,7 @@
 package com.example.capstone.controller;
 
 import jakarta.validation.Valid;
+import com.example.capstone.dto.AlertResponse;
 import com.example.capstone.dto.EntityStateResponse;
 import com.example.capstone.entity.*;
 import com.example.capstone.repository.AlertRepository;
@@ -10,6 +11,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.time.Instant;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
@@ -36,6 +38,19 @@ public class EntityStateController {
                 state.getTimestamp(),
                 state.getMetricType().name(),
                 state.getValue()
+        );
+    }
+
+    private AlertResponse toAlertResponse(Alert alert) {
+        return new AlertResponse(
+                alert.getId(),
+                alert.getEntity().getId(),
+                alert.getEntity().getName(),
+                alert.getSeverity().name(),
+                alert.getType().name(),
+                alert.getTriggeredAt(),
+                alert.getResolvedAt(),
+                alert.getDetail()
         );
     }
 
@@ -68,7 +83,46 @@ public class EntityStateController {
             alert.setTriggeredAt(Instant.now());
             alert.setDetail(type.name() + " reached " + value + " (threshold: " + threshold + ")");
             Alert savedAlert = alertRepository.save(alert);
-            messagingTemplate.convertAndSend("/topic/alerts", savedAlert.getId());
+            messagingTemplate.convertAndSend("/topic/alerts", toAlertResponse(savedAlert));
+        }
+    }
+
+    // Trend-based check. checkThresholds() above only catches a value that is too
+    // HIGH against a fixed ceiling — it has no case for POPULATION, so a falling
+    // population never triggered anything, no matter how far it fell. A "drop" is
+    // inherently about change over time, so this compares the incoming value
+    // against the entity's own previous POPULATION reading instead of a constant.
+    // Same pattern can be reused for OCCUPANCY/AVG_SPEED later if they need it too.
+    private void checkPopulationDrop(EntityState incoming) {
+        if (incoming.getMetricType() != MetricType.POPULATION || incoming.getEntity() == null
+                || incoming.getEntity().getId() == null) {
+            return;
+        }
+
+        Optional<EntityState> previous = repository.findFirstByEntity_IdAndMetricTypeOrderByTimestampDesc(
+                incoming.getEntity().getId(), MetricType.POPULATION);
+        if (previous.isEmpty()) return; // first reading ever for this zone — nothing to compare against
+
+        double before = previous.get().getValue();
+        double after = incoming.getValue();
+        if (before <= 0) return; // avoid divide-by-zero / meaningless percentage
+
+        double percentDrop = (before - after) / before; // positive => population fell
+        AlertSeverity severity = null;
+        if (percentDrop >= 0.20) severity = AlertSeverity.CRITICAL;
+        else if (percentDrop >= 0.10) severity = AlertSeverity.HIGH;
+        else if (percentDrop >= 0.05) severity = AlertSeverity.MEDIUM;
+
+        if (severity != null) {
+            Alert alert = new Alert();
+            alert.setEntity(incoming.getEntity());
+            alert.setSeverity(severity);
+            alert.setType(AlertType.ANOMALY_DETECTED);
+            alert.setTriggeredAt(Instant.now());
+            alert.setDetail(String.format(
+                    "Population dropped %.1f%% (%.0f -> %.0f)", percentDrop * 100, before, after));
+            Alert savedAlert = alertRepository.save(alert);
+            messagingTemplate.convertAndSend("/topic/alerts", toAlertResponse(savedAlert));
         }
     }
 
@@ -79,6 +133,7 @@ public class EntityStateController {
 
     @PostMapping
     public EntityStateResponse create(@Valid @RequestBody EntityState state) {
+        checkPopulationDrop(state); // must run BEFORE save — needs the old "latest" row, not the new one
         EntityState saved = repository.save(state);
         checkThresholds(saved);
         EntityStateResponse response = toResponse(saved);
