@@ -1,5 +1,5 @@
-```python
 import requests
+from datetime import datetime, timezone
 
 BASE_URL = "http://localhost:8080/api"
 
@@ -28,5 +28,7 @@ class BackendClient:
             "entity": {"id": entity_id},
             "metricType": metric_type,
             "value": value,
+            # EntityState.timestamp is @NotNull on the backend — every post_state()
+            # call was getting rejected with a 400 before this was added.
+            "timestamp": datetime.now(timezone.utc).isoformat().replace("+00:00", "Z"),
         })
-```

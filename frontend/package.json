@@ -11,9 +11,11 @@
   "dependencies": {
     "@stomp/stompjs": "^7.3.0",
     "@tanstack/react-query": "^5.101.4",
+    "chart.js": "^4.5.1",
     "mapbox-gl": "^3.27.0",
     "next": "16.2.12",
     "react": "19.2.4",
+    "react-chartjs-2": "^5.3.1",
     "react-dom": "19.2.4",
     "react-map-gl": "^8.1.1"
   },
